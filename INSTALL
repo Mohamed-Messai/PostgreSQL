@@ -1,0 +1,16 @@
+# BD initialisation
+su
+su postgres
+psql -c "CREATE USER dbdisco WITH ENCRYPTED PASSWORD '$1'";
+psql -c "CREATE DATABASE dbdisco";
+psql -c "GRANT ALL PRIVILEGES ON DATABASE dbdisco TO dbdisco";
+
+# Web site initialisation
+mv connexion-sample.php connexion.php 
+edit connexion.php to set password
+cp -R dbdisco /var/www/html
+chmod -R 700 dbdisco
+chown -R www-data:www-data dbdisco
+
+# Edit crontab
+TODO

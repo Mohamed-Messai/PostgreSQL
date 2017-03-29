@@ -1,7 +1,7 @@
 <?php
 include 'connexion.php';
 
-/** BD schema name**/
+/** DB schema name**/
 function generateRandomString($length = 10) {
 	$characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	$charactersLength = strlen($characters);
@@ -19,7 +19,7 @@ function printHtmlBegin ($schema) {
 	echo '<title>DB Disco</title>';
 	echo '<link href="css/main.css" type="text/css" rel="stylesheet"/>';	
 	echo '<body>';
-	echo '<h1>BD Disco</h1>
+	echo '<h1>DB Disco</h1>
 		<i>Interface de découverte des bases de données relationnelles</i>';
 	echo '<h2> Base de données : ' . $schema . '</h2>';
 }
@@ -34,7 +34,7 @@ function printHtmlForm ($usersql='') {
 function printHtmlEnd () {
 	echo '<footer>
 		<hr/>
-		<p>BD Disco utilise PostgreSQL 9.1 [<a href="https://www.postgresql.org/docs/">doc</a>] [<a href="http://stph.scenari-community.org/bdd/">cours</a>]</p> 
+		<p>DB Disco utilise PostgreSQL 9.1 [<a href="https://www.postgresql.org/docs/">doc</a>] [<a href="http://stph.scenari-community.org/bdd/">cours</a>]</p> 
 		<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>
 		by <a href="https://stph.crzt.fr">Stéphane Crozat</a></p>
 		';
@@ -58,7 +58,7 @@ function execUserSql ($conn, $usersql) {
 	}
 }
 
-/** BD Printing **/
+/** DB Printing **/
 function printBdContent($conn, $schema) {
 	echo '<h3>Contenu de la base de données</h3>';
 	$sql = "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname=LOWER('" . $schema . "')";	
