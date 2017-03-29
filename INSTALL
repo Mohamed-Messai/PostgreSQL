@@ -13,4 +13,8 @@ chmod -R 700 dbdisco
 chown -R www-data:www-data dbdisco
 
 # Edit crontab
-TODO
+su 
+su postgres
+crontab -e
+0 4 * * * /home/xxx/dbdisco/etc/resetdbdisco.sh
+
