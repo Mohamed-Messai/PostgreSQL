@@ -34,7 +34,7 @@ function printHtmlForm ($usersql='') {
 function printHtmlEnd () {
 	echo '<footer>
 		<hr/>
-		<p>DB Disco utilise PostgreSQL 9.1 [<a href="https://www.postgresql.org/docs/">doc</a>] [<a href="http://stph.scenari-community.org/bdd/">cours</a>]</p> 
+		<p>DB Disco utilise PostgreSQL 9.4 [<a href="https://www.postgresql.org/docs/">doc</a>] [<a href="http://stph.scenari-community.org/bdd/">cours</a>]</p> 
 		<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>
 		by <a href="https://stph.crzt.fr">Stéphane Crozat</a></p>
 		';
