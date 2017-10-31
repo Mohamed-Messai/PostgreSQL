@@ -6,8 +6,8 @@ psql -c "CREATE DATABASE dbdisco";
 psql -c "GRANT ALL PRIVILEGES ON DATABASE dbdisco TO dbdisco";
 
 # Web site initialisation
-mv connexion-sample.php connexion.php 
-edit connexion.php to set password
+mv php/connexion-sample.php php/connexion.php 
+edit php/connexion.php to set password
 cp -R dbdisco /var/www/html
 chmod -R 700 dbdisco
 chown -R www-data:www-data dbdisco
