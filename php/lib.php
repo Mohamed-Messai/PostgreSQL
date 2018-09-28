@@ -52,8 +52,7 @@ function printHtmlEnd ($conn) {
 /** User SQL execution **/
 function execUserSql ($conn, $usersql) {
 	if (strtoupper(substr(trim($usersql),0,6)) == 'SELECT') {
-		echo '<p><b>' . $usersql . '</b></p>';
-		printSelect($conn, $usersql);
+		printSelect($conn, $usersql, "", $usersql);
 		echo '<hr>';
 	}
 	else {
@@ -73,6 +72,11 @@ function printBdContent($conn, $schema) {
 		printTable($conn, $row[0], $schema);
 		echo '<br>';
 	}
+	$sql = "SELECT viewname, definition FROM pg_catalog.pg_views WHERE schemaname=LOWER('" . $schema . "')";
+	foreach ($conn->query($sql) as $row) {
+		printView($conn, $row[0], $row[1]);
+		echo '<br>';
+	}
 }
 
 function printTable($conn, $table, $schema) {
@@ -81,7 +85,7 @@ function printTable($conn, $table, $schema) {
 	echo '<caption><b>' . strtoupper($table) . '</b></caption>';
 
 	/** Column headers **/
-	$sql = " SELECT column_name AS name, data_type AS type, character_maximum_length AS max
+	$sql = "SELECT column_name AS name, data_type AS type, character_maximum_length AS max
 			FROM information_schema.columns
 			WHERE table_name = LOWER('" . $table . "')
 			AND table_schema = LOWER('" . $schema . "')
@@ -117,7 +121,11 @@ function printTable($conn, $table, $schema) {
 
 }
 
-function printSelect($conn, $sql, $header=TRUE) {
+function printView($conn, $name, $sql) {
+	printSelect($conn, $sql, $name, "[vue] ".$sql);
+}
+
+function printSelect($conn, $sql, $caption="", $summary="", $header=TRUE) {
 
 	$st = $conn->prepare($sql);
 	$st->execute();
@@ -125,6 +133,8 @@ function printSelect($conn, $sql, $header=TRUE) {
 
 	if ($resN) {
 		echo '<table border="1">';
+		echo '<caption><b>' . strtoupper($caption) . '</b></caption>';
+		echo '<summary>' . $summary . '</summary>';
 		/** Print column headers **/
 		if ($header) {
 			/** Problem : If there is several columns with the same name FETCH_ASSOC returns only a column per colum name, columns are lost
