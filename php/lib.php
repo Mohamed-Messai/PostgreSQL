@@ -31,12 +31,17 @@ function printHtmlForm ($usersql='') {
 	echo '</form>';
 }
 
-function printHtmlEnd () {
+function printHtmlEnd ($conn) {
+	$st = $conn->prepare("SELECT LEFT(version(),17)");
+	$st->execute();
+	$res = $st->fetch(PDO::FETCH_NUM);
+	$pgVersion = $res[0];
 	echo '<footer>
 		<hr/>
 		<a href="index.php?deleteall=true"><i>Réinitialiser la BD courante<i></a>
 		<hr/>
-		<p>DB Disco utilise PostgreSQL 9.4 [<a href="https://www.postgresql.org/docs/">doc</a>] [<a href="http://stph.scenari-community.org/bdd/">cours</a>]</p>
+		<p>DB Disco utilise '.$pgVersion.' [<a href="https://www.postgresql.org/docs/">doc</a>] [<a href="http://librecours.net">cours</a>]
+		<br/>Code source : <a href="https://gitlab.utc.fr/crozatst/dbdisco">https://gitlab.utc.fr/crozatst/dbdisco</a></p>
 		<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>
 		by <a href="https://stph.crzt.fr">Stéphane Crozat</a></p>
 		';

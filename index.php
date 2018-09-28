@@ -3,10 +3,10 @@ session_start();
 
 include 'php/lib.php';
 
-if (isset($_POST['usersql'])) {	
+if (isset($_POST['usersql'])) {
 	$usersql = $_POST['usersql'];
 }
-if (isset($_GET['deleteall'])) {	
+if (isset($_GET['deleteall'])) {
 	$deleteall = $_GET['deleteall'];
 }
 else {
@@ -22,14 +22,14 @@ if (isset($_SESSION['schema'])) {
 }
 else {
 	$schema = generateRandomString(7);
-	$_SESSION['schema'] = $schema;	
+	$_SESSION['schema'] = $schema;
 	$sql = 'CREATE SCHEMA ' . $schema;
 	$res = $conn->exec($sql);
 	if ($res===false) {
 		$err = $conn->errorInfo();
 		echo ('Database can not be created, contact the administrator\n');
 		die('Technical message : *Schema not created* '  . 'Schema ' . $schema . $err[2]);
-	}	
+	}
 }
 
 /** DB reinitialization  **/
@@ -77,6 +77,6 @@ if (isset($usersql) && $usersql != '') {
 
 printBdContent($conn, $schema);
 
-printHtmlEnd();
+printHtmlEnd($conn);
 
 ?>
