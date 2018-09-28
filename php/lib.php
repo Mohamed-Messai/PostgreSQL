@@ -17,7 +17,7 @@ function printHtmlBegin ($schema) {
 	echo '<html>';
 	echo '<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/></head>';
 	echo '<title>DB Disco</title>';
-	echo '<link href="css/main.css" type="text/css" rel="stylesheet"/>';	
+	echo '<link href="css/main.css" type="text/css" rel="stylesheet"/>';
 	echo '<body>';
 	echo '<h1>DB Disco</h1>
 		<i>Interface de découverte des bases de données relationnelles</i>';
@@ -36,7 +36,7 @@ function printHtmlEnd () {
 		<hr/>
 		<a href="index.php?deleteall=true"><i>Réinitialiser la BD courante<i></a>
 		<hr/>
-		<p>DB Disco utilise PostgreSQL 9.4 [<a href="https://www.postgresql.org/docs/">doc</a>] [<a href="http://stph.scenari-community.org/bdd/">cours</a>]</p> 
+		<p>DB Disco utilise PostgreSQL 9.4 [<a href="https://www.postgresql.org/docs/">doc</a>] [<a href="http://stph.scenari-community.org/bdd/">cours</a>]</p>
 		<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>
 		by <a href="https://stph.crzt.fr">Stéphane Crozat</a></p>
 		';
@@ -46,7 +46,7 @@ function printHtmlEnd () {
 
 /** User SQL execution **/
 function execUserSql ($conn, $usersql) {
-	if (strtoupper(substr(trim($usersql),0,6)) == 'SELECT') {		
+	if (strtoupper(substr(trim($usersql),0,6)) == 'SELECT') {
 		echo '<p><b>' . $usersql . '</b></p>';
 		printSelect($conn, $usersql);
 		echo '<hr>';
@@ -56,42 +56,42 @@ function execUserSql ($conn, $usersql) {
 		if ($res===false) {
 			$err = $conn->errorInfo();
 			echo '<i>' . $err[2] . '</i>';
-		}		
+		}
 	}
 }
 
 /** DB Printing **/
 function printBdContent($conn, $schema) {
 	echo '<h3>Contenu de la base de données</h3>';
-	$sql = "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname=LOWER('" . $schema . "')";	
-	foreach ($conn->query($sql) as $row) {		
+	$sql = "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname=LOWER('" . $schema . "')";
+	foreach ($conn->query($sql) as $row) {
 		printTable($conn, $row[0], $schema);
-		echo '<br>';	
-	}	
+		echo '<br>';
+	}
 }
 
 function printTable($conn, $table, $schema) {
-	
+
 	echo '<table border="1">';
 	echo '<caption><b>' . strtoupper($table) . '</b></caption>';
-	
+
 	/** Column headers **/
 	$sql = " SELECT column_name AS name, data_type AS type, character_maximum_length AS max
-			FROM information_schema.columns 
+			FROM information_schema.columns
 			WHERE table_name = LOWER('" . $table . "')
-			AND table_schema = LOWER('" . $schema . "') 
+			AND table_schema = LOWER('" . $schema . "')
 			ORDER BY ordinal_position";
 
 	$st = $conn->prepare($sql);
 	$st->execute();
 	$res = $st->fetchAll(PDO::FETCH_ASSOC);
-	echo '<tr>';	
+	echo '<tr>';
 	foreach ($res as $prop) {
 		if ($prop['type']=='character varying') $prop['type'] = 'varchar';
-		if ($prop['max']) $prop['type'] .= '(' . $prop['max'] . ')'; 
+		if ($prop['max']) $prop['type'] .= '(' . $prop['max'] . ')';
 		echo '<th>' . $prop['name'] . ':' . $prop['type'] . '</th>';
 	}
-	
+
 	/** Content **/
 	$sql = "SELECT * FROM " . $table;
 	$st = $conn->prepare($sql);
@@ -106,36 +106,48 @@ function printTable($conn, $table, $schema) {
 			echo '</tr>';
 		}
 	}
-	
+
 	/** Table end **/
 	echo '</table>';
-		
+
 }
 
-function printSelect($conn, $sql, $header=TRUE) {	
-	
+function printSelect($conn, $sql, $header=TRUE) {
+
 	$st = $conn->prepare($sql);
-	$st->execute();	
-	$res = $st->fetchAll(PDO::FETCH_ASSOC);
-	
-	if ($res) {		
-		echo '<table border="1">';		
+	$st->execute();
+	$resN = $st->fetchAll(PDO::FETCH_NUM);
+
+	if ($resN) {
+		echo '<table border="1">';
 		/** Print column headers **/
-		if ($header) {						
-			echo '<tr>';
-			$col = array_keys($res[0]);
-			foreach ($col as $prop) {
-				echo '<th>' . $prop . '</th>';
+		if ($header) {
+			/** Problem : If there is several columns with the same name FETCH_ASSOC returns only a column per colum name, columns are lost
+			 ** Solution : Fetching with FETCH_NUM ($resN) and naming with FETCH_ASSOC ($resA), and detecting case where columns are lost
+			 **/
+			$st->execute();
+			$resA = $st->fetch(PDO::FETCH_ASSOC);
+			$colA = array_keys($resA);
+			$colN = array_keys($resN[0]);
+			if (count($colA)==count($colN)) {
+				echo '<tr>';
+				foreach ($colA as $prop) {
+					echo '<th>' . $prop . '</th>';
+				}
+				echo '</tr>';
+			}
+			else {
+				echo "Plusieurs colonnes ont le même nom, je suis embêté pour afficher les entêtes de colonne...";
 			}
 		}
 		/** Print values **/
-		foreach ($res as $row) {
+		foreach ($resN as $row) {
 			echo '<tr>';
 			foreach ($row as $cell) {
 				echo '<td>' . $cell . '</td>';
 			}
 			echo '</tr>';
-		}		
+		}
 		echo '</table>';
 	}
 	else {
